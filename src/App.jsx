@@ -1,10 +1,22 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
+  const [healthData, setHealthData] = useState(null)
+  const [healthError, setHealthError] = useState(null)
+
+  useEffect(() => {
+    fetch('/api/health', {
+      method: 'GET',
+      headers: { 'accept': 'application/json' },
+    })
+      .then((res) => res.json())
+      .then((data) => setHealthData(JSON.stringify(data)))
+      .catch((err) => setHealthError(err.message))
+  }, [])
 
   return (
     <>
@@ -23,6 +35,14 @@ function App() {
         </button>
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
+        </p>
+        <p>
+          Backend healthy check:{' '}
+          <code>
+            {healthError
+              ? `Error: ${healthError}`
+              : healthData ?? 'Loading...'}
+          </code>
         </p>
       </div>
       <p className="read-the-docs">
